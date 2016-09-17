@@ -73,10 +73,7 @@ var News = React.createClass({
         return {
             counter: 0
         }
-    },    
-    onTotalNewsClick: function() {
-        this.setState({counter: ++this.state.counter });
-    },      
+    },       
     render: function() {
         var data = this.props.data;
         var newsTemplate;
@@ -98,10 +95,36 @@ var News = React.createClass({
             <div className="news">
             {newsTemplate}
             <strong 
-                className={'news__count ' + (data.length > 0 ? '':'none')}
-                onClick={this.onTotalNewsClick} >
+                className={'news__count ' + (data.length > 0 ? '':'none')} >
                  Всего новостей: {data.length}
             </strong>
+            </div>
+        );
+    }
+});
+
+var TestInput = React.createClass({
+    getInitialState: function() {
+        return {
+            myValue: ''
+        };
+    },   
+    onChangeHandler: function(e) {
+        this.setState({myValue: e.target.value})
+    },
+    onBtnClickHandler: function() {
+        alert(this.state.myValue);
+    },
+    render: function() {
+        return (
+            <div>
+                <input 
+                    className='test-input' 
+                    value={this.state.myValue}
+                    onChange={this.onChangeHandler}
+                    placeholder='введите значение' 
+                />
+                <button onClick={this.onBtnClickHandler}>Показать alert</button>
             </div>
         );
     }
@@ -112,6 +135,7 @@ var App = React.createClass({
         return (
             <div className="app">
                 <h3>Новости</h3>
+                <TestInput />
                 <News data={my_news} /> {/*добавили свойство data */}
             </div>
             );
