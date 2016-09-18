@@ -103,32 +103,87 @@ var News = React.createClass({
     }
 });
 
-var TestInput = React.createClass({ 
-    componentDidMount: function() { //ставим фокус в input
-        ReactDOM.findDOMNode(this.refs.myTestInput).focus();
+var Add = React.createClass({
+    getInitialState: function() { //устанавливаем начальное состояние (state)
+        return {
+            // btnIsDisabled: true   // второй вариант решение "Контролируемый компонент"
+                agreeNotChecked: true,
+                authorIsEmpty: true,
+                textIsEmpty: true
+            };
     },
-    componentWillReceiveProps: function(nextProps) {
-        this.setState({
-            likesIncreasing: nextProps.likeCount > this.props.likeCount
-        });
+    onAuthorChange: function(e) {
+        if (e.target.value.trim().length > 0) {
+            this.setState({authorIsEmpty: false})
+        } else {
+            this.setState({authorIsEmpty: true})
+        }
     },
-    onBtnClickHandler: function() {
-        console.log(this.refs);
-        alert(ReactDOM.findDOMNode(this.refs.myTestInput).value);
+    onTextChange: function(e) {
+        if (e.target.value.trim().length > 0) {
+            this.setState({textIsEmpty: false})
+        } else {
+            this.setState({textIsEmpty: true})
+        }
+    },
+    onFieldChange: function(fieldName, e) {
+        var next = {}; // мы не можем передать ее напрямую в setState в качестве названия поля объекта.
+        if (e.target.value.trim().length > 0) {
+        next[fieldName] = false;
+            this.setState(next); // или this.setState({[''+fieldName]:false})
+        } else {
+        next[fieldName] = true;
+            this.setState(next); // this.setState({[''+fieldName]:true})
+        }
+    },
+    componentDidMount: function() {
+        ReactDOM.findDOMNode(this.refs.author).focus();
+    },
+    onBtnClickHandler: function(e) {
+        e.preventDefault();
+        var author = ReactDOM.findDOMNode(this.refs.author).value;
+        var text = ReactDOM.findDOMNode(this.refs.text).value;
+        alert(author + '\n' + text);
+    },
+    onCheckRuleClick: function(e) {
+       // ReactDOM.findDOMNode(this.refs.alert_button).disabled = !e.target.checked;
+       this.setState({agreeNotChecked: !this.state.agreeNotChecked}); //устанавливаем значение в state
     },
     render: function() {
+        var agreeNotChecked = this.state.agreeNotChecked,
+            authorIsEmpty = this.state.authorIsEmpty,
+            textIsEmpty = this.state.textIsEmpty;
         return (
-            <div>
+            <form className='add cf'>
                 <input
-                    className='test-input'
+                    type='text'
+                    className='add__author'
+                    onChange={this.onAuthorChange}
                     defaultValue=''
-                    placeholder='введите значение'
-                    ref='myTestInput'
-                    />
-                <button onClick={this.onBtnClickHandler} ref='alert_button'>Показать alert</button>
-            </div>
+                    placeholder='Ваше имя'
+                    ref='author'
+                />
+                <textarea
+                    className='add__text'
+                    onChange={this.onTextChange}
+                    defaultValue=''
+                    placeholder='Текст новости'
+                    ref='text'
+                ></textarea>
+                <label className='add__checkrule'>
+                    <input type='checkbox' defaultChecked={false} ref='checkrule' onChange={this.onCheckRuleClick}/>
+                    Я согласен с правилами
+                </label>
+                <button
+                    className='add__btn'
+                    onClick={this.onBtnClickHandler}
+                    ref='alert_button' 
+                    disabled={agreeNotChecked || authorIsEmpty || textIsEmpty} >
+                    Показать alert
+                </button>
+            </form>
         );
-    }
+}
 });
 
 var App = React.createClass({
@@ -136,7 +191,7 @@ var App = React.createClass({
         return (
             <div className="app">
                 <h3>Новости</h3>
-                <TestInput />
+                <Add />
                 <News data={my_news} /> {/*добавили свойство data */}
             </div>
             );
