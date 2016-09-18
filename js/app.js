@@ -104,6 +104,14 @@ var News = React.createClass({
 });
 
 var TestInput = React.createClass({ 
+    componentDidMount: function() { //ставим фокус в input
+        ReactDOM.findDOMNode(this.refs.myTestInput).focus();
+    },
+    componentWillReceiveProps: function(nextProps) {
+        this.setState({
+            likesIncreasing: nextProps.likeCount > this.props.likeCount
+        });
+    },
     onBtnClickHandler: function() {
         console.log(this.refs);
         alert(ReactDOM.findDOMNode(this.refs.myTestInput).value);
